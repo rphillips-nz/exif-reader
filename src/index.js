@@ -60,7 +60,7 @@ async function renderThumbnail(filePath, parent) {
 async function onAddClick(e) {
 	const fileDialog = new QFileDialog();
 	fileDialog.setFileMode(FileMode.ExistingFiles);
-	fileDialog.setNameFilter('Images (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)');
+	fileDialog.setNameFilter('Images (*.jpg *.jpeg *.heic *.tif *.tiff)');
 	fileDialog.exec();
 
 	const selectedFiles = fileDialog.selectedFiles();
@@ -68,7 +68,7 @@ async function onAddClick(e) {
 
 	for (const filePath of selectedFiles) {
 		try {
-			let output = await exifr.parse(filePath);
+			let output = await exifr.parse(filePath, true);
 
 			const listItem = new QWidget();
 			listItem.setLayout(new FlexLayout());
