@@ -2,6 +2,7 @@ import os from 'os'
 import Jimp from 'jimp'
 import exifr from 'exifr'
 import {
+	QPlainTextEdit,
 	QMainWindow,
 	QWidget,
 	QLabel,
@@ -20,7 +21,7 @@ import {
 
 import addImage from '../assets/add.png';
 
-let contentLabel;
+let contentText;
 let list;
 let selectedListItem;
 
@@ -42,7 +43,7 @@ function onListItemClickFn(listItem, output) {
 			background-color: #fefefe;
 		`);
 
-		contentLabel.setText(output ? JSON.stringify(output, null, 2) : "No headers");
+		contentText.setPlainText(output ? JSON.stringify(output, null, 2) : "No headers");
 	};
 }
 
@@ -117,10 +118,9 @@ const main = async () => {
 	content.setObjectName('content');
 	content.setLayout(new FlexLayout());
 
-	contentLabel = new QLabel();
-	contentLabel.setObjectName('contentLabel');
-	contentLabel.setWordWrap(true);
-	contentLabel.setAlignment(AlignmentFlag.AlignTop);
+	contentText = new QPlainTextEdit();
+	contentText.setObjectName('contentText');
+	contentText.setReadOnly(true);
 
 	const controls = new QWidget();
 	controls.setObjectName('controls');
@@ -136,8 +136,8 @@ const main = async () => {
 	controlsLabel.setObjectName('controlsLabel');
 	controlsLabel.setText('Select images');
 
-	const contentLabelScroll = new QScrollArea();
-	contentLabelScroll.setWidget(contentLabel);
+	const contentTextScroll = new QScrollArea();
+	contentTextScroll.setWidget(contentText);
 
 	controls.layout.addWidget(button);
 	controls.layout.addWidget(controlsLabel);
@@ -146,7 +146,7 @@ const main = async () => {
 	sidebar.layout.addWidget(listScroll);
 	body.layout.addWidget(sidebar);
 
-	content.layout.addWidget(contentLabelScroll);
+	content.layout.addWidget(contentTextScroll);
 	body.layout.addWidget(content);
 
 	win.setCentralWidget(body);
@@ -166,7 +166,7 @@ const main = async () => {
 
 			#body,
 			#controls,
-			#contentLabel {
+			#contentText {
 				background-color: #fefefe;
 			}
 
@@ -223,10 +223,10 @@ const main = async () => {
 				height: '100%';
 			}
 
-			#contentLabel {
+			#contentText {
+				border: 0;
 				text-align: top;
 				font-size: 12px;
-				padding: 5px;
 				font-family: 'Monaco';
 			}
 
