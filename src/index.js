@@ -1,6 +1,4 @@
-import os from 'os'
-import Jimp from 'jimp'
-import exifr from 'exifr'
+import exifr from 'exifr';
 import {
 	QPlainTextEdit,
 	QMainWindow,
@@ -13,49 +11,41 @@ import {
 	QScrollArea,
 	ScrollBarPolicy,
 	AlignmentFlag,
-	QPixmap,
 	WidgetEventTypes,
 	QErrorMessage,
+	QDragMoveEvent,
+	QDragLeaveEvent,
+	QDropEvent,
 	CursorShape,
-	QFileDialog } from '@nodegui/nodegui';
+	QFileDialog,
+} from '@nodegui/nodegui';
 
+import List from './list.js';
 import addImage from '../assets/add.png';
 
 let contentText;
 let list;
-let selectedListItem;
 
-const homeDir = os.homedir();
-
-function onListItemClickFn(listItem, output) {
-	return () => {
-		if (selectedListItem) {
-			selectedListItem.setCursor(CursorShape.PointingHandCursor);
-			selectedListItem.setInlineStyle(`
-				background-color: transparent;
-			`);
-		}
-
-		selectedListItem = listItem;
-
-		listItem.setCursor(CursorShape.ArrowCursor);
-		listItem.setInlineStyle(`
-			background-color: #fefefe;
-		`);
-
-		contentText.setPlainText(output ? JSON.stringify(output, null, 2) : "No headers");
-	};
+function onChangeList(listItem) {
+	contentText.setPlainText(listItem.outputFormatted);
 }
 
-async function renderThumbnail(filePath, parent) {
-	const label = new QLabel();
-	const pixmap = new QPixmap();
-	const lenna = await Jimp.read(filePath);
-	const thumbnail = await lenna.scaleToFit(30, 30).getBufferAsync(Jimp.AUTO);
-	// let thumbnail = await exifr.thumbnail(filePath); // alternate call, only works if in exif data
-	pixmap.loadFromData(thumbnail);
-	label.setPixmap(pixmap);
-	parent.layout.addWidget(label);
+async function addFiles(filePaths) {
+	for (const filePath of filePaths) {
+		let output;
+
+		try {
+			output = await exifr.parse(filePath);
+		} catch (err) {
+			output = {_error: err.message};
+		}
+
+		const listItem = list.addListItem(filePath, output);
+
+		if (filePath === filePaths[filePaths.length - 1]) {
+			listItem.onClick();
+		}
+	}
 }
 
 async function onAddClick(e) {
@@ -64,34 +54,7 @@ async function onAddClick(e) {
 	fileDialog.setNameFilter('Images (*.jpg *.jpeg *.heic *.tif *.tiff)');
 	fileDialog.exec();
 
-	const selectedFiles = fileDialog.selectedFiles();
-	let lastOnClick;
-
-	for (const filePath of selectedFiles) {
-		try {
-			let output = await exifr.parse(filePath, true);
-
-			const listItem = new QWidget();
-			listItem.setLayout(new FlexLayout());
-
-			const listItemLabel = new QLabel();
-			listItemLabel.setText(filePath.replace(homeDir, "~"));
-
-			// await renderThumbnail(filePath, listItem)
-			listItem.layout.addWidget(listItemLabel);
-			lastOnClick = onListItemClickFn(listItem, output);
-			listItem.addEventListener(WidgetEventTypes.MouseButtonPress, lastOnClick, false);
-			listItem.setCursor(CursorShape.PointingHandCursor);
-			list.layout.addWidget(listItem);
-		} catch (e) {
-			const errorMessage = new QErrorMessage();
-			errorMessage.showMessage(e.message);
-		}
-	}
-
-	if (lastOnClick) {
-		lastOnClick();
-	}
+	await addFiles(fileDialog.selectedFiles());
 }
 
 const main = async () => {
@@ -106,13 +69,7 @@ const main = async () => {
 	sidebar.setObjectName('sidebar');
 	sidebar.setLayout(new FlexLayout());
 
-	list = new QWidget();
-	list.setObjectName('list');
-	list.setLayout(new FlexLayout());
-
-	const listScroll = new QScrollArea();
-	listScroll.setHorizontalScrollBarPolicy(ScrollBarPolicy.ScrollBarAlwaysOff);
-	listScroll.setWidget(list);
+	list = new List(onChangeList);
 
 	const content = new QWidget();
 	content.setObjectName('content');
@@ -128,22 +85,47 @@ const main = async () => {
 
 	const button = new QPushButton();
 	button.setIcon(new QIcon(addImage));
-	button.setText("Add");
+	button.setText('Add');
 	button.addEventListener('clicked', onAddClick, false);
 	button.setCursor(CursorShape.PointingHandCursor);
 
 	const controlsLabel = new QLabel();
 	controlsLabel.setObjectName('controlsLabel');
-	controlsLabel.setText('Select images');
+	controlsLabel.setText('Select or drop images');
 
 	const contentTextScroll = new QScrollArea();
 	contentTextScroll.setWidget(contentText);
+
+	body.setAcceptDrops(true);
+
+	body.addEventListener(WidgetEventTypes.DragEnter, (e) => {
+		controlsLabel.setText('Drop to add images');
+		const ev = new QDragMoveEvent(e);
+		ev.accept();
+	});
+
+	body.addEventListener(WidgetEventTypes.DragLeave, (e) => {
+		controlsLabel.setText('Select or drop images');
+		const ev = new QDragLeaveEvent(e);
+		ev.ignore();
+	});
+
+	body.addEventListener(WidgetEventTypes.Drop, async (e) => {
+		controlsLabel.setText('Select or drop images');
+		const dropEvent = new QDropEvent(e);
+		const mimeData = dropEvent.mimeData();
+		const urls = mimeData.urls();
+
+		await addFiles(urls.map((url) => {
+			return url.toString().replace('file://', '');
+		}));
+	});
 
 	controls.layout.addWidget(button);
 	controls.layout.addWidget(controlsLabel);
 
 	sidebar.layout.addWidget(controls);
-	sidebar.layout.addWidget(listScroll);
+	sidebar.layout.addWidget(list.widget);
 	body.layout.addWidget(sidebar);
 
 	content.layout.addWidget(contentTextScroll);
@@ -151,106 +133,104 @@ const main = async () => {
 
 	win.setCentralWidget(body);
 
-	body.setStyleSheet(
-		`
-			* {
-				color: #222;
-				font-weight: 400;
-			}
+	body.setStyleSheet(`
+		* {
+			color: #222;
+			font-weight: 400;
+		}
 
-			#body,
-			#sidebar,
-			#content {
-				height: '100%';
-			}
+		#body,
+		#sidebar,
+		#content {
+			height: '100%';
+		}
 
-			#body,
-			#controls,
-			#contentText {
-				background-color: #fefefe;
-			}
+		#body,
+		#controls,
+		#contentText {
+			background-color: #fefefe;
+		}
 
-			#body {
-				flex: 1;
-				flex-direction: 'row';
-				min-height: 500px;
-				min-width: 600px;
-			}
+		#body {
+			flex: 1;
+			flex-direction: 'row';
+			min-height: 500px;
+			min-width: 600px;
+		}
 
-			#sidebar {
-				flex: 1 0 275px;
-			}
+		#sidebar {
+			flex: 1 0 275px;
+		}
 
-			#list {
-				background-color: #eee;
-				height: '100%';
-			}
+		#list {
+			background-color: #eee;
+			height: '100%';
+		}
 
-			#list > QWidget {
-				padding: 15px 10px;
-				border-bottom: 1px solid #dedede;
-			}
+		#list > QWidget {
+			padding: 15px 10px;
+			border-bottom: 1px solid #dedede;
+		}
 
-			#list QLabel {
-				background-color: transparent;
-			}
+		#list QLabel {
+			background-color: transparent;
+		}
 
-			#list > QWidget:hover {
-				background-color: #f5f5f5;
-			}
+		#list > QWidget:hover {
+			background-color: #f5f5f5;
+		}
 
-			#controlsLabel {
-				margin-left: 3px;
-				color: #888;
-			}
+		#controlsLabel {
+			margin-left: 3px;
+			color: #888;
+		}
 
-			#controls {
-				border-bottom: 1px solid #dedede;
-				flex-direction: 'row';
-				padding: 5px;
-				padding-left: 10px;
-			}
+		#controls {
+			border-bottom: 1px solid #dedede;
+			flex-direction: 'row';
+			padding: 5px;
+			padding-left: 10px;
+		}
 
-			#content {
-				flex: 4 0 400px;
-				border-left: 1px solid #dedede;
-			}
+		#content {
+			flex: 4 0 400px;
+			border-left: 1px solid #dedede;
+		}
 
-			QScrollArea {
-				border: 0;
-				flex: 1;
-				width: '100%';
-				height: '100%';
-			}
+		QScrollArea {
+			border: 0;
+			flex: 1;
+			width: '100%';
+			height: '100%';
+		}
 
-			#contentText {
-				border: 0;
-				text-align: top;
-				font-size: 12px;
-				font-family: 'Monaco';
-			}
+		#contentText {
+			border: 0;
+			text-align: top;
+			font-size: 12px;
+			font-family: 'Monaco';
+		}
 
-			QPushButton {
-				border: 1px solid #dedede;
-				background-color: #fefefe;
-				padding: 5px 15px 5px 10px;
-				border-radius: 3px;
-				margin: 0;
-			}
+		QPushButton {
+			border: 1px solid #dedede;
+			background-color: #fefefe;
+			padding: 5px 15px 5px 10px;
+			border-radius: 3px;
+			margin: 0;
+		}
 
-			QPushButton:hover {
-				border: 1px solid #bababa;
-			}
+		QPushButton:hover {
+			border: 1px solid #bababa;
+		}
 
-			QPushButton:pressed {
-				background-color: #eee;
-			}
-		`
+		QPushButton:pressed {
+			background-color: #eee;
+		}`
 	);
 
 	win.show();
 
 	global.win = win;
-}
+};
 
 main().catch(console.error);
