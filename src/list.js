@@ -10,17 +10,16 @@ import ListItem from './list-item.js';
 
 export default class List {
 	constructor(onChange) {
+		this.listItems = [];
 		this.onChange = onChange;
 
 		this.list = new QWidget();
 		this.list.setObjectName('list');
 		this.list.setLayout(new FlexLayout());
 
-		const listScroll = new QScrollArea();
-		listScroll.setHorizontalScrollBarPolicy(ScrollBarPolicy.ScrollBarAlwaysOff);
-		listScroll.setWidget(this.list);
-
-		this.widget = listScroll;
+		this.widget = new QScrollArea();
+		this.widget.setHorizontalScrollBarPolicy(ScrollBarPolicy.ScrollBarAlwaysOff);
+		this.widget.setWidget(this.list);
 
 		this.widget.setStyleSheet(`
 			#list {
@@ -50,10 +49,19 @@ export default class List {
 		);
 	}
 
-	// TODO check if file exists and if so, reload it
 	addListItem(filePath, output) {
-		const listItem = new ListItem(filePath, output, this.onSelect.bind(this));
-		this.list.layout.addWidget(listItem.widget);
+		let listItem = this.listItems.find(function (listItem) {
+			return listItem.filePath === filePath;
+		});
+
+		if (listItem) {
+			listItem.output = output;
+		} else {
+			listItem = new ListItem(filePath, output, this.onSelect.bind(this));
+			this.listItems.push(listItem);
+			this.list.layout.addWidget(listItem.widget);
+		}
+
 		return listItem;
 	}
 

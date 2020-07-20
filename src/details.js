@@ -8,20 +8,20 @@ import {
 export default class Details {
 	constructor() {
 		this.widget = new QWidget();
-		this.widget.setObjectName('content');
+		this.widget.setObjectName('details');
 		this.widget.setLayout(new FlexLayout());
 
-		this.contentText = new QPlainTextEdit();
-		this.contentText.setObjectName('contentText');
-		this.contentText.setReadOnly(true);
+		this.detailsText = new QPlainTextEdit();
+		this.detailsText.setObjectName('detailsText');
+		this.detailsText.setReadOnly(true);
 
-		const contentTextScroll = new QScrollArea();
-		contentTextScroll.setWidget(this.contentText);
+		const detailsTextScroll = new QScrollArea();
+		detailsTextScroll.setWidget(this.detailsText);
 
-		this.widget.layout.addWidget(contentTextScroll);
+		this.widget.layout.addWidget(detailsTextScroll);
 
 		this.widget.setStyleSheet(`
-			#content {
+			#details {
 				flex: 4 0 400px;
 				border-left: 1px solid #dedede;
 				height: '100%';
@@ -34,7 +34,7 @@ export default class Details {
 				height: '100%';
 			}
 
-			#contentText {
+			#detailsText {
 				border: 0;
 				text-align: top;
 				font-size: 12px;
@@ -45,6 +45,6 @@ export default class Details {
 	}
 
 	setText(text) {
-		this.contentText.setPlainText(text);
+		this.detailsText.setPlainText(text);
 	}
 }

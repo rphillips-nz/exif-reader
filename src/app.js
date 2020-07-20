@@ -48,15 +48,17 @@ export default class App {
 		this.widget.setAcceptDrops(true);
 
 		this.widget.addEventListener(WidgetEventTypes.DragEnter, (e) => {
-			controlsLabel.setText('Drop to add images');
-			const ev = new QDragMoveEvent(e);
-			ev.accept();
+			const dragMoveEvent = new QDragMoveEvent(e);
+			const mimeData = dragMoveEvent.mimeData();
+			const urls = mimeData.urls();
+			controlsLabel.setText(`Drop to add ${urls.length} images`);
+			dragMoveEvent.accept();
 		});
 
 		this.widget.addEventListener(WidgetEventTypes.DragLeave, (e) => {
 			controlsLabel.setText('Select or drop images');
-			const ev = new QDragLeaveEvent(e);
-			ev.ignore();
+			const dragLeaveEvent = new QDragLeaveEvent(e);
+			dragLeaveEvent.ignore();
 		});
 
 		this.widget.addEventListener(WidgetEventTypes.Drop, async (e) => {
@@ -98,17 +100,19 @@ export default class App {
 			#body {
 				flex: 1;
 				flex-direction: 'row';
-				min-height: 500px;
-				min-width: 600px;
+				min-height: 700px;
+				min-width: 900px;
 			}
 
 			#sidebar {
-				flex: 1 0 275px;
+				flex: 1 0 300px;
+				min-width: 300px;
 			}
 
 			#controlsLabel {
 				margin-left: 3px;
 				color: #888;
+				flex: 1;
 			}
 
 			#controls {
