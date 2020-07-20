@@ -47,9 +47,7 @@ export default class ListItem {
 
 	unselect() {
 		this.widget.setCursor(CursorShape.PointingHandCursor);
-		this.widget.setInlineStyle(`
-			background-color: transparent;
-		`);
+		this.widget.setInlineStyle('');
 	}
 
 	onClick() {

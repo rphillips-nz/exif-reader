@@ -21,6 +21,33 @@ export default class List {
 		listScroll.setWidget(this.list);
 
 		this.widget = listScroll;
+
+		this.widget.setStyleSheet(`
+			#list {
+				background-color: #eee;
+				height: '100%';
+			}
+
+			#list > QWidget {
+				padding: 15px 10px;
+				border-bottom: 1px solid #dedede;
+			}
+
+			#list QLabel {
+				background-color: transparent;
+			}
+
+			#list > QWidget:hover {
+				background-color: #f5f5f5;
+			}
+
+			QScrollArea {
+				border: 0;
+				flex: 1;
+				width: '100%';
+				height: '100%';
+			}`
+		);
 	}
 
 	// TODO check if file exists and if so, reload it

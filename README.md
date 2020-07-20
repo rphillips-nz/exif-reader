@@ -1,6 +1,8 @@
-# exif-reader
+# EXIF Reader
 
 **Reads and displays EXIF headers from images.**
+
+---
 
 ## Develop
 
