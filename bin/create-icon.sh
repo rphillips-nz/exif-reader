@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export TEMP=temp.iconset
-export SOURCE=assets/logo.png
+export SOURCE=raw/logo.png
 
 mkdir $TEMP
 sips -z 16 16     $SOURCE --out $TEMP/icon_16x16.png

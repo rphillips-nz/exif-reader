@@ -7,6 +7,7 @@ import {
 } from '@nodegui/nodegui';
 
 import ListItem from './list-item.js';
+import Colours from './colours.js';
 
 export default class List {
 	constructor(onChange) {
@@ -23,21 +24,13 @@ export default class List {
 
 		this.widget.setStyleSheet(`
 			#list {
-				background-color: #eee;
+				background-color: ${Colours.supportBackground};
 				height: '100%';
 			}
 
 			#list > QWidget {
 				padding: 15px 10px;
-				border-bottom: 1px solid #dedede;
-			}
-
-			#list QLabel {
-				background-color: transparent;
-			}
-
-			#list > QWidget:hover {
-				background-color: #f5f5f5;
+				border-bottom: 1px solid ${Colours.supportBorder};
 			}
 
 			QScrollArea {

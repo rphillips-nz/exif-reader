@@ -5,6 +5,8 @@ import {
 	QScrollArea,
 } from '@nodegui/nodegui';
 
+import Colours from './colours.js';
+
 export default class Details {
 	constructor() {
 		this.widget = new QWidget();
@@ -23,7 +25,7 @@ export default class Details {
 		this.widget.setStyleSheet(`
 			#details {
 				flex: 4 0 400px;
-				border-left: 1px solid #dedede;
+				border-left: 1px solid ${Colours.contentBorder};
 				height: '100%';
 			}
 
@@ -39,7 +41,7 @@ export default class Details {
 				text-align: top;
 				font-size: 12px;
 				font-family: 'Monaco';
-				background-color: #fefefe;
+				background-color: ${Colours.contentBackground};
 			}`
 		);
 	}

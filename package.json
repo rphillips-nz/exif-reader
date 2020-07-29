@@ -2,7 +2,7 @@
   "name": "exif-reader",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Ross Phillips <contact@rossphillips.nz>",
+  "author": "Ross Phillips <hi@rossphillips.nz>",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -12,16 +12,17 @@
   },
   "dependencies": {
     "@nodegui/nodegui": "^0.24.0",
-    "exifr": "^5.0.2",
+    "@nodegui/os-utils": "^1.1.2",
+    "exifr": "^5.0.3",
     "jimp": "^0.14.0"
   },
   "devDependencies": {
     "@nodegui/packer": "^1.4.1",
-    "@types/node": "^14.0.23",
+    "@types/node": "^14.0.27",
     "clean-webpack-plugin": "^3.0.0",
     "file-loader": "^6.0.0",
     "native-addon-loader": "^2.0.1",
-    "webpack": "^4.43.0",
+    "webpack": "^4.44.0",
     "webpack-cli": "^3.3.12"
   }
 }

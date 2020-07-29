@@ -13,10 +13,12 @@ import {
 	CursorShape,
 	QFileDialog,
 } from '@nodegui/nodegui';
+import { Info } from '@nodegui/os-utils';
 
 import List from './list.js';
 import Details from './details.js';
-import addImage from '../assets/add.png';
+import Colours from './colours.js';
+import Assets from './assets.js';
 
 export default class App {
 	constructor() {
@@ -36,9 +38,8 @@ export default class App {
 		controls.setLayout(new FlexLayout());
 
 		const button = new QPushButton();
-		button.setIcon(new QIcon(addImage));
-		button.setText('Add');
-		button.addEventListener('clicked', this.onAddClick, false);
+		button.setIcon(new QIcon(Assets.addPath));
+		button.addEventListener('clicked', this.onAddClick.bind(this), false);
 		button.setCursor(CursorShape.PointingHandCursor);
 
 		const controlsLabel = new QLabel();
@@ -51,7 +52,8 @@ export default class App {
 			const dragMoveEvent = new QDragMoveEvent(e);
 			const mimeData = dragMoveEvent.mimeData();
 			const urls = mimeData.urls();
-			controlsLabel.setText(`Drop to add ${urls.length} images`);
+
+			controlsLabel.setText(`Drop to add ${urls.length > 1 ? `${urls.length} images` : 'image'}`);
 			dragMoveEvent.accept();
 		});
 
@@ -83,18 +85,13 @@ export default class App {
 
 		this.widget.setStyleSheet(`
 			* {
-				color: #222;
+				color: ${Colours.text};
 				font-weight: 400;
 			}
 
 			#body,
 			#sidebar {
 				height: '100%';
-			}
-
-			#body,
-			#controls {
-				background-color: #fefefe;
 			}
 
 			#body {
@@ -111,31 +108,29 @@ export default class App {
 
 			#controlsLabel {
 				margin-left: 3px;
-				color: #888;
+				color: ${Colours.textSecondary};
 				flex: 1;
 			}
 
 			#controls {
-				border-bottom: 1px solid #dedede;
+				border-bottom: 1px solid ${Colours.supportBorder};
+				background-color: ${Colours.supportBackground};
 				flex-direction: 'row';
 				padding: 5px;
 				padding-left: 10px;
 			}
 
 			QPushButton {
-				border: 1px solid #dedede;
-				background-color: #fefefe;
-				padding: 5px 15px 5px 10px;
-				border-radius: 3px;
+				border-top: 1px solid ${Colours.buttonBorder};
+				background-color: ${Colours.buttonBackground};
+				color: ${Colours.buttonText};
+				padding: 2px 3px 3px 3px;
+				border-radius: 4px;
 				margin: 0;
 			}
 
-			QPushButton:hover {
-				border: 1px solid #bababa;
-			}
-
 			QPushButton:pressed {
-				background-color: #eee;
+				background-color: ${Colours.buttonActiveBackground};
 			}`
 		);
 	}
