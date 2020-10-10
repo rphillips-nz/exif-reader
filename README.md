@@ -2,6 +2,8 @@
 
 **🌅 Cross-platform desktop app to parse and display EXIF headers from images.**
 
+[Download latest release](https://github.com/rphillips-nz/exif-reader/releases/latest/download/EXIF.Reader.zip)
+
 Currently supports the following file types:
 
 - JPG/JPEG
