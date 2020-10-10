@@ -34,19 +34,17 @@ This creates the `deploy` directory with a template. Here you can add icons, cha
 
 ### Step 2: (_**Run this command every time you want to build a new distributable**_)
 
-Next you can run the pack command:
+Creates the JavaScript bundle along with assets inside the `dist` directory:
 
 ```sh
 npm run build
 ```
 
-This creates the JavaScript bundle along with assets inside the `dist` directory.
+Build the distributable based on the template, the output is in the `/deploy/<platform>/build` directory (ignored in git):
 
 ```sh
-npx nodegui-packer --pack ./dist
+npm run package
 ```
-
-This builds the distributable based on the template. The output is in the `/deploy/<platform>/build` directory (ignored in git).
 
 ## License
 
