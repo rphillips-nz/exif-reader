@@ -1,6 +1,9 @@
-<p align="center"><img src="https://raw.githubusercontent.com/rphillips-nz/exif-reader/master/raw/bumblebee.svg" alt="Nice, unrelated image of a bumblebee"  width="480"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/rphillips-nz/exif-reader/master/raw/bumblebee.svg" alt="Nice, unrelated image of a bumblebee"  width="380"></p>
 <h1 align="center">EXIF Reader</h1>
-<p align="center">Cross-platform desktop app to parse and display EXIF headers from images.
+
+&nbsp;
+
+Cross-platform desktop app to parse and display EXIF headers from images.
 
 📦 **[Download latest release](https://github.com/rphillips-nz/exif-reader/releases/latest/download/EXIF.Reader.zip)**
 
