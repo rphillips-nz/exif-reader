@@ -13,6 +13,7 @@ import {
 	WidgetEventTypes,
 	CursorShape,
 } from '@nodegui/nodegui';
+import exifr from 'exifr';
 
 import Colours from './colours.js';
 import Assets from './assets.js';
@@ -27,25 +28,15 @@ const stateImages = {
 };
 
 export default class ListItem {
-	constructor(filePath, output, onSelect) {
+	constructor(filePath, onLoad, onSelect) {
 		this.filePath = filePath;
-		this.output = output;
+		this.onLoad = onLoad;
 		this.onSelect = onSelect;
 
 		this.widget = new QWidget();
 
-		const pixmap = new QPixmap();
-		const imageData = stateImages[this.state];
-		pixmap.loadFromData(imageData);
-
-		const iconLabel = new QLabel();
-		iconLabel.setObjectName('icon');
-		iconLabel.setPixmap(pixmap.scaled(18, 18, AspectRatioMode.KeepAspectRatio, TransformationMode.SmoothTransformation));
-		iconLabel.setStyleSheet(`
-			#icon {
-				margin-right: 5px;
-			}`
-		);
+		this.iconLabel = new QLabel();
+		this.iconLabel.setInlineStyle('margin-right: 5px;');
 
 		const label = new QLabel();
 		const showFullPath = false; // TODO - make configurable
@@ -56,14 +47,36 @@ export default class ListItem {
 		}
 
 		this.widget.setLayout(new FlexLayout());
-		this.widget.layout.addWidget(iconLabel);
+		this.widget.layout.addWidget(this.iconLabel);
 		this.widget.layout.addWidget(label);
 		this.widget.addEventListener(WidgetEventTypes.MouseButtonPress, this.onClick.bind(this), false);
 		this.widget.setCursor(CursorShape.PointingHandCursor);
+
+		const loadOnSelect = false; // TODO - make configurable
+		if (loadOnSelect) {
+			this.loading = true;
+			this.renderIconLabel();
+		} else {
+			this.load();
+		}
+	}
+
+	load() {
+		this.loading = true;
+		this.renderIconLabel();
+
+		this.loadOutput().then((output) => {
+			this.output = output;
+			this.loading = false;
+			this.renderIconLabel();
+			this.onLoad(this);
+		});
 	}
 
 	get state() {
-		if (!this.output || !Object.keys(this.output).length) {
+		if (this.loading) {
+			return 'loading';
+		} else if (!this.output || !Object.keys(this.output).length) {
 			return 'empty';
 		} else if (this.output._error) {
 			return 'failed';
@@ -83,16 +96,33 @@ export default class ListItem {
 	}
 
 	select() {
+		this.isSelected = true;
 		this.widget.setCursor(CursorShape.ArrowCursor);
 		this.widget.setInlineStyle(`background-color: ${Colours.selectedBackground};`);
 	}
 
 	unselect() {
+		this.isSelected = false;
 		this.widget.setCursor(CursorShape.PointingHandCursor);
 		this.widget.setInlineStyle('');
 	}
 
+	renderIconLabel() {
+		const pixmap = new QPixmap();
+		pixmap.loadFromData(stateImages[this.state]);
+		this.iconLabel.setPixmap(pixmap.scaled(18, 18, AspectRatioMode.KeepAspectRatio, TransformationMode.SmoothTransformation));
+	}
+
+	async loadOutput() {
+		try {
+			return await exifr.parse(this.filePath);
+		} catch (err) {
+			return {_error: err.message};
+		}
+	}
+
 	onClick() {
+		this.load();
 		this.onSelect(this);
 	}
 }

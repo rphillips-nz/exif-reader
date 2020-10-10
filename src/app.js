@@ -1,4 +1,3 @@
-import exifr from 'exifr';
 import {
 	QWidget,
 	QLabel,
@@ -139,17 +138,15 @@ export default class App {
 		this.details.setText(listItem.outputFormatted);
 	}
 
+	onListItemLoad(listItem) {
+		if (listItem.isSelected) {
+			this.onChangeList(listItem);
+		}
+	}
+
 	async addFiles(filePaths) {
 		for (const filePath of filePaths) {
-			let output;
-
-			try {
-				output = await exifr.parse(filePath);
-			} catch (err) {
-				output = {_error: err.message};
-			}
-
-			const listItem = this.list.addListItem(filePath, output);
+			const listItem = this.list.addListItem(filePath, this.onListItemLoad.bind(this));
 
 			if (filePath === filePaths[filePaths.length - 1]) {
 				listItem.onClick();
@@ -160,7 +157,7 @@ export default class App {
 	async onAddClick(e) {
 		const fileDialog = new QFileDialog();
 		fileDialog.setFileMode(FileMode.ExistingFiles);
-		fileDialog.setNameFilter('Images (*.jpg *.jpeg *.heic *.tif *.tiff)');
+		fileDialog.setNameFilter('Images (*.jpg *.jpeg *.heic *.tif *.tiff *.png)');
 		fileDialog.exec();
 
 		await this.addFiles(fileDialog.selectedFiles());

@@ -42,15 +42,15 @@ export default class List {
 		);
 	}
 
-	addListItem(filePath, output) {
-		let listItem = this.listItems.find(function (listItem) {
+	addListItem(filePath, onLoad) {
+		let listItem = this.listItems.find((listItem) => {
 			return listItem.filePath === filePath;
 		});
 
 		if (listItem) {
-			listItem.output = output;
+			listItem.load();
 		} else {
-			listItem = new ListItem(filePath, output, this.onSelect.bind(this));
+			listItem = new ListItem(filePath, onLoad, this.onSelect.bind(this));
 			this.listItems.push(listItem);
 			this.list.layout.addWidget(listItem.widget);
 		}
