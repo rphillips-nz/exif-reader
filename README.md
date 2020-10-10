@@ -15,7 +15,7 @@
 &bull;
 [License](#license)
 
-&nbsp;
+---
 
 ## Features
 
