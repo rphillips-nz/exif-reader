@@ -23,3 +23,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm run build
+      - run: npm run package
+      - name: Archive build
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'EXIF Reader.app'
+          path: 'deploy/darwin/build/EXIF Reader.app'
