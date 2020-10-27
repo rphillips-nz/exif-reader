@@ -27,5 +27,5 @@ jobs:
       - name: Archive build
         uses: actions/upload-artifact@v2
         with:
-          name: 'EXIF Reader.app'
-          path: 'deploy/darwin/build/EXIF Reader.app'
+          name: 'EXIF Reader.zip'
+          path: 'deploy/darwin/build/*'
