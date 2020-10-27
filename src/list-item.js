@@ -27,6 +27,22 @@ const stateImages = {
 	success: fs.readFileSync(Assets.stateSuccessPath),
 };
 
+if (Assets.stateLoadingPathSelected) {
+	stateImages.loadingSelected = fs.readFileSync(Assets.stateLoadingPathSelected);
+}
+
+if (Assets.stateEmptyPathSelected) {
+	stateImages.emptySelected = fs.readFileSync(Assets.stateEmptyPathSelected);
+}
+
+if (Assets.stateFailedPathSelected) {
+	stateImages.failedSelected = fs.readFileSync(Assets.stateFailedPathSelected);
+}
+
+if (Assets.stateSuccessPathSelected) {
+	stateImages.successSelected = fs.readFileSync(Assets.stateSuccessPathSelected);
+}
+
 export default class ListItem {
 	constructor(filePath, onLoad, onSelect) {
 		this.filePath = filePath;
@@ -38,17 +54,17 @@ export default class ListItem {
 		this.iconLabel = new QLabel();
 		this.iconLabel.setInlineStyle('margin-right: 5px;');
 
-		const label = new QLabel();
+		this.label = new QLabel();
 		const showFullPath = false; // TODO - make configurable
 		if (showFullPath) {
-			label.setText(filePath.replace(homeDir, '~'));
+			this.label.setText(filePath.replace(homeDir, '~'));
 		} else {
-			label.setText(path.basename(filePath));
+			this.label.setText(path.basename(filePath));
 		}
 
 		this.widget.setLayout(new FlexLayout());
 		this.widget.layout.addWidget(this.iconLabel);
-		this.widget.layout.addWidget(label);
+		this.widget.layout.addWidget(this.label);
 		this.widget.addEventListener(WidgetEventTypes.MouseButtonPress, this.onClick.bind(this), false);
 		this.widget.setCursor(CursorShape.PointingHandCursor);
 
@@ -99,17 +115,27 @@ export default class ListItem {
 		this.isSelected = true;
 		this.widget.setCursor(CursorShape.ArrowCursor);
 		this.widget.setInlineStyle(`background-color: ${Colours.selectedBackground};`);
+		this.label.setInlineStyle(`color: ${Colours.selectedText};`);
+		this.renderIconLabel();
 	}
 
 	unselect() {
 		this.isSelected = false;
 		this.widget.setCursor(CursorShape.PointingHandCursor);
 		this.widget.setInlineStyle('');
+		this.label.setInlineStyle('');
+		this.renderIconLabel();
 	}
 
 	renderIconLabel() {
 		const pixmap = new QPixmap();
-		pixmap.loadFromData(stateImages[this.state]);
+
+		let state = this.state;
+		if (this.isSelected) {
+			state += 'Selected';
+		}
+
+		pixmap.loadFromData(stateImages[state] || stateImages[this.state]);
 		this.iconLabel.setPixmap(pixmap.scaled(18, 18, AspectRatioMode.KeepAspectRatio, TransformationMode.SmoothTransformation));
 	}
 

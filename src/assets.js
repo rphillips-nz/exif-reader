@@ -24,6 +24,10 @@ const assets = {
 		stateEmptyPath: stateEmptyLight,
 		stateFailedPath: stateFailedLight,
 		stateSuccessPath: stateSuccessLight,
+		stateLoadingPathSelected: stateLoadingDark,
+		stateEmptyPathSelected: stateEmptyDark,
+		stateFailedPathSelected: stateFailedDark,
+		stateSuccessPathSelected: stateSuccessDark,
 	},
 	dark: {
 		addPath: addDark,

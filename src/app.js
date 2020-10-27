@@ -36,10 +36,10 @@ export default class App {
 		controls.setObjectName('controls');
 		controls.setLayout(new FlexLayout());
 
-		const button = new QPushButton();
-		button.setIcon(new QIcon(Assets.addPath));
-		button.addEventListener('clicked', this.onAddClick.bind(this), false);
-		button.setCursor(CursorShape.PointingHandCursor);
+		const addButton = new QPushButton();
+		addButton.setIcon(new QIcon(Assets.addPath));
+		addButton.addEventListener('clicked', this.onAddClick.bind(this), false);
+		addButton.setCursor(CursorShape.PointingHandCursor);
 
 		const controlsLabel = new QLabel();
 		controlsLabel.setObjectName('controlsLabel');
@@ -73,7 +73,7 @@ export default class App {
 			}));
 		});
 
-		controls.layout.addWidget(button);
+		controls.layout.addWidget(addButton);
 		controls.layout.addWidget(controlsLabel);
 
 		sidebar.layout.addWidget(controls);
@@ -120,16 +120,19 @@ export default class App {
 			}
 
 			QPushButton {
-				border-top: 1px solid ${Colours.buttonBorder};
+				border-top: 1px solid ${Colours.buttonBorderTop};
+				border-bottom: 1px solid ${Colours.buttonBorderBottom};
 				background-color: ${Colours.buttonBackground};
 				color: ${Colours.buttonText};
-				padding: 2px 3px 3px 3px;
+				padding: 2px 3px;
 				border-radius: 4px;
 				margin: 0;
 			}
 
 			QPushButton:pressed {
 				background-color: ${Colours.buttonActiveBackground};
+				border-top: 2px solid ${Colours.buttonActiveBackground};
+				border-bottom: 0;
 			}`
 		);
 	}
