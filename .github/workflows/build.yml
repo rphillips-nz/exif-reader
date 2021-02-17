@@ -22,6 +22,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
+      - run: npm run build:addon
+        working-directory: ./node_modules/@nodegui/nodegui
       - run: npm run build
       - run: npm run package
       - name: Archive build
