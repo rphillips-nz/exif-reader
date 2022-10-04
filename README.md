@@ -33,6 +33,8 @@ npm install
 npm start
 ```
 
+> Currently fails on macOS, waiting on: https://github.com/nodegui/nodegui/issues/939
+
 ### Building
 
 EXIF Reader is packaged with [@nodegui/packer](https://github.com/nodegui/packer).

@@ -16,7 +16,7 @@ module.exports = {
 				use: [
 					{
 						loader: 'file-loader',
-						options: {publicPath: 'dist'}
+						options: { publicPath: 'dist' }
 					}
 				]
 			},
@@ -25,7 +25,7 @@ module.exports = {
 				use: [
 					{
 						loader: 'native-addon-loader',
-						options: {name: '[name]-[hash].[ext]'}
+						options: { name: '[name]-[hash].[ext]' }
 					}
 				]
 			}
