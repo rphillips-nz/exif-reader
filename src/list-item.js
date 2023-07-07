@@ -143,7 +143,7 @@ export default class ListItem {
 		try {
 			return await exifr.parse(this.filePath);
 		} catch (err) {
-			return {_error: err.message};
+			return { _error: err.message };
 		}
 	}
 

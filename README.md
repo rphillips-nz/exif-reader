@@ -63,6 +63,18 @@ Build the distributable based on the template, the output is in the `/deploy/<pl
 npm run package
 ```
 
+#### Issues
+
+Recent versions of `nodegui` have proved problematic building.
+
+https://github.com/nodegui/nodegui/issues/939#issuecomment-1381115767
+
+```
+pushd node_modules/@nodegui/nodegui
+npm run build:addon
+popd
+```
+
 ## License
 
 MIT
