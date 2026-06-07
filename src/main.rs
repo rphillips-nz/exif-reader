@@ -321,7 +321,7 @@ fn subscription(_state: &State) -> Subscription<Message> {
 
 pub fn main() -> iced::Result {
     iced::application(State::default, update, view)
-        .title("Exifiler")
+        .title("EXIF Reader")
         .style(|_state, theme| {
             let c = AppColors::from_theme(theme);
             iced::theme::Style {

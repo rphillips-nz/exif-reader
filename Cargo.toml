@@ -1,5 +1,5 @@
 [package]
-name = "exifiler"
+name = "exif-reader"
 version = "0.1.0"
 edition = "2024"
 
