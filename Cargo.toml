@@ -1,0 +1,9 @@
+[package]
+name = "exif-reader"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+iced = "0.14.0"
+kamadak-exif = "0.6"
+rfd = "0.15"
